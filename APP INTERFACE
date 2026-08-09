@@ -1,0 +1,438 @@
+
+             :root {
+    --primary: #196329;
+    --primary-soft: #2d7140;
+    --surface: rgba(255, 255, 255, 0.88);
+    --surface-strong: rgba(255, 255, 255, 0.95);
+    --text: #1c2f1f;
+    --text-muted: #58655e;
+    --panel: rgba(255, 255, 255, 0.76);
+    --border: rgba(0, 0, 0, 0.08);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+body {
+        min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+        background: linear-gradient(180deg, #d8ead8 0%, #f2f6ee 100%);
+}
+
+#app-container {
+    width: 375px;
+    height: 812px;
+    background: linear-gradient(180deg, #f5f8f0 0%, #e3ecd8 100%);
+    border-radius: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(40, 95, 34, 0.13);
+}
+
+#app-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1000&auto=format&fit=crop') center/cover;
+    opacity: 0.18;
+    pointer-events: none;
+}
+
+.app-header {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 0 18px;
+    background: rgba(25, 99, 41, 0.96);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+#header-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.screen {
+    display: none;
+    position: relative;
+    height: calc(100% - 92px);
+    padding: 20px 20px 100px;
+    z-index: 1;
+    overflow-y: auto;
+}
+#signin-screen.active {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.screen.active {
+    display: flex;
+    flex-direction: column;
+}
+
+#signin-screen {
+    height: 100%;
+    padding-top: 130px;
+}
+
+.page-content {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.logo-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%; /* This makes it a circle */
+    background: white;
+    overflow: hidden; /* This clips the square image into a circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--primary);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the image fills the circle nicely */
+}
+
+.logo-container {
+    display: flex;
+    flex-direction: column; /* Stack image above text */
+    align-items: center;    /* Horizontal center */
+    justify-content: center;
+    margin-bottom: 30px;    /* Space before login box */
+    width: 100%;
+}
+
+
+.logo-text {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.login-box,
+.home-card,
+.param-card,
+.history-item,
+.setting-row,
+.recommendation-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 12px 26px rgba(30, 80, 35, 0.08);
+}
+
+.login-box {
+    padding: 28px 22px;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+}
+
+.section-label {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.sub-label {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 18px;
+    line-height: 1.4;
+}
+
+.app-input,
+.modal-input {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(44, 101, 49, 0.18);
+    background: #fbfdf7;
+    color: var(--text);
+    font-size: 15px;
+    margin-bottom: 14px;
+}
+
+.primary-btn,
+.secondary-btn {
+    width: 100%;
+    border-radius: 16px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.primary-btn {
+    padding: 16px 18px;
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 14px 22px rgba(25, 99, 41, 0.24);
+}
+
+.primary-btn:hover {
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    padding: 14px 18px;
+    background: #fff;
+    color: var(--text);
+    border: 1px solid rgba(25, 99, 41, 0.18);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 8px 0;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(30, 70, 35, 0.16);
+    margin: 0 14px;
+}
+
+.center-content {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.welcome-text {
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.analysis-text {
+    color: var(--text-muted);
+    font-size: 15px;
+    margin-bottom: 28px;
+}
+
+.logo-circle {
+    width: 117px;
+    height: 117px;
+    margin: 0 auto 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(25, 99, 41, 0.18);
+    box-shadow: 0 18px 28px rgba(22, 68, 33, 0.1);
+}
+
+.logo-icon-large {
+    font-size: 48px;
+    margin-bottom: 8px;
+}
+
+.logo-text-dark {
+    color: var(--text);
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.param-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 18px;
+}
+
+.param-card {
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.param-card span,
+.param-card strong {
+    color: var(--text);
+}
+
+.param-card strong {
+    font-size: 16px;
+}
+
+#bottom-nav {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 88px;
+    background: rgba(255, 255, 255, 0.96);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 4px;
+    border-top: 1px solid rgba(30, 70, 35, 0.12);
+    box-shadow: 0 -10px 24px rgba(0, 0, 0, 0.09);
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: #66756e;
+    font-size: 11px;
+    padding: 10px 0;
+    cursor: pointer;
+    border-radius: 22px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+.nav-item.active {
+    background: var(--primary) !important;
+    color: white !important;
+    border-radius: 12px; /* Adds that nice rounded look from your image */
+    transition: all 0.3s ease;
+}
+
+.nav-item.active span {
+    color: white;
+}
+
+
+.modal-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 76, 33, 0.38);
+    z-index: 20;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-box {
+    width: 90%;
+    max-width: 320px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 26px 22px;
+    box-shadow: 0 20px 35px rgba(15, 60, 33, 0.16);
+    color: var(--text);
+}
+
+.modal-box p {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.settings-group-label {
+    color: var(--text-muted);
+    font-size: 13px;
+    padding: 0 6px;
+    margin-bottom: 10px;
+}
+
+.toggle {
+    width: 42px;
+    height: 24px;
+    border-radius: 14px;
+    background: rgba(25, 99, 41, 0.12);
+}
+
+.signout-bar {
+    background: rgba(25, 99, 41, 0.96);
+    color: white;
+    padding: 16px 18px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    justify-content: center;
+}
+
+.exit-icon {
+    margin-right: 0;
+    border: 2px solid rgba(255, 255, 255, 0.82);
+    padding: 6px 10px;
+    border-radius: 12px;
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(42, 98, 36, 0.16);
+    border-radius: 22px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.recommendation-card {
+    min-height: 110px;
+    margin-bottom: 14px;
+}
+
+.skeleton-card {
+    min-height: 110px;
+    margin-bottom: 14px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(25, 99, 41, 0.12);
+    border-radius: 22px;
+}
