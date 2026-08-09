@@ -1,0 +1,264 @@
+// ==========================================
+// 1. FIREBASE SETUP & LIVE LISTENER
+// ==========================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCrPJif44CWBJwkvDgdjFz8QjE6AQvKT7Y",
+  authDomain: "soil-sense-fbf2e.firebaseapp.com",
+  projectId: "soil-sense-fbf2e",
+  databaseURL: "https://soil-sense-fbf2e-default-rtdb.firebaseio.com", // Added for clarity
+  storageBucket: "soil-sense-fbf2e.firebasestorage.app",
+  messagingSenderId: "582532340956",
+  appId: "1:582532340956:web:57b0cb4392c2a2b91fe819",
+  measurementId: "G-4PPC3DR4H5"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+function startSensorListener() {
+    const sensorRef = database.ref('sensors/');
+    sensorRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Update pH Level
+            if(document.getElementById('live-ph')) {
+                document.getElementById('live-ph').textContent = data.ph || 0;
+            }
+            // Update Moisture Level
+            if(document.getElementById('live-moisture')) {
+                document.getElementById('live-moisture').textContent = (data.moisture || 0) + "%";
+            }
+            // Update Nitrogen (N)
+            if(document.getElementById('live-n')) {
+                document.getElementById('live-n').textContent = data.n || 0;
+            }
+            // Update Phosphorus (P)
+            if(document.getElementById('live-p')) {
+                document.getElementById('live-p').textContent = data.p || 0;
+            }
+            // Update Potassium (K)
+            if(document.getElementById('live-k')) {
+                document.getElementById('live-k').textContent = data.k || 0;
+            }
+            
+            console.log("Firebase Data Sync:", data);
+        }
+    });
+}
+startSensorListener();
+
+// ==========================================
+// 2. NAVIGATION & HISTORY LOGIC
+// ==========================================
+const navHistory = [];
+let searchHistory = JSON.parse(localStorage.getItem('soilSenseHistory')) || [];
+
+const screenTitles = {
+    'signin-screen': '', 
+    'home-screen': 'Home Page',
+    'advisor-screen': 'Smart Crop Advisor',
+    'recommendation-screen': 'Recommended Crops',
+    'history-screen': 'History',
+    'settings-screen': 'Settings'
+};
+
+function navigateTo(screenId, saveHistory = true) {
+    const activeScreen = document.querySelector('.screen.active');
+    if (saveHistory && activeScreen && activeScreen.id !== 'signin-screen') {
+        navHistory.push(activeScreen.id);
+    }
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+    }
+
+    if (screenId === 'history-screen') {
+        updateHistoryUI();
+    }
+
+    updateUI(screenId);
+}
+
+function updateUI(screenId) {
+    const header = document.getElementById('dynamic-header');
+    const bottomNav = document.getElementById('bottom-nav');
+    const backBtn = document.getElementById('header-back-btn');
+    const headerTitle = document.getElementById('header-title');
+
+    headerTitle.textContent = screenTitles[screenId] || '';
+
+    if (screenId === 'signin-screen') {
+        header.style.display = 'none';
+        bottomNav.style.display = 'none';
+    } else {
+        header.style.display = 'flex';
+        bottomNav.style.display = 'flex';
+        backBtn.style.display = screenId === 'home-screen' ? 'none' : 'block';
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+    if (['home-screen', 'advisor-screen', 'recommendation-screen'].includes(screenId)) {
+        document.getElementById('nav-home').classList.add('active');
+    } else if (screenId === 'history-screen') {
+        document.getElementById('nav-history').classList.add('active');
+    } else if (screenId === 'settings-screen') {
+        document.getElementById('nav-settings').classList.add('active');
+    }
+}
+
+function addToHistory(cropName, ph, moisture) {
+    const timestamp = new Date().toLocaleString([], { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+    const historyItem = { name: cropName, ph: ph, moist: moisture, time: timestamp };
+
+    searchHistory.unshift(historyItem);
+    if (searchHistory.length > 10) searchHistory.pop();
+
+    localStorage.setItem('soilSenseHistory', JSON.stringify(searchHistory));
+}
+
+function updateHistoryUI() {
+    const historyContainer = document.querySelector('#history-screen .page-content');
+    
+    if (searchHistory.length === 0) {
+        historyContainer.innerHTML = `<p style="text-align:center; margin-top:50px; color:#666;">No recent activity found.</p>`;
+        return;
+    }
+
+    let html = `<h3 style="margin-bottom:15px;">Recent Activity</h3>`;
+    searchHistory.forEach(item => {
+        html += `
+            <div class="history-item" style="margin-bottom:10px; border-left: 5px solid #2e7d32; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <p><strong>${item.name}</strong> <span style="font-size: 10px; color: #999; float: right;">${item.time}</span></p>
+                <span style="font-size: 12px; color: #666;">PH: ${item.ph} | Moisture: ${item.moist}</span>
+            </div>`;
+    });
+    
+    html += `<button class="primary-btn" style="background:#cc0000; margin-top:20px;" onclick="clearHistory()">Clear History</button>`;
+    historyContainer.innerHTML = html;
+}
+
+function clearHistory() {
+    searchHistory = [];
+    localStorage.removeItem('soilSenseHistory');
+    updateHistoryUI();
+}
+
+function goBack() {
+    if (navHistory.length > 0) {
+        const lastScreen = navHistory.pop();
+        navigateTo(lastScreen, false);
+    }
+}
+
+function login() {
+    navHistory.length = 0; 
+    navigateTo('home-screen', false);
+}
+
+function signOut() {
+    navHistory.length = 0;
+    navigateTo('signin-screen', false);
+}
+
+function showPopup() { 
+    document.querySelector('.modal-input').value = ""; 
+    document.getElementById('crop-popup').classList.add('active'); 
+}
+
+function hidePopup() { 
+    document.getElementById('crop-popup').classList.remove('active'); 
+}
+
+// ==========================================
+// 3. CROP DATABASE & ANALYSIS
+// ==========================================
+const cropDatabase = [
+    { name: "Rice", minPh: 5.5, maxPh: 6.5, minMoist: 80, maxMoist: 100, n: 120, p: 60, k: 40 },
+    { name: "Wheat", minPh: 6.0, maxPh: 7.5, minMoist: 50, maxMoist: 70, n: 120, p: 60, k: 40 },
+    { name: "Maize", minPh: 5.8, maxPh: 7.0, minMoist: 60, maxMoist: 80, n: 120, p: 60, k: 40 },
+    { name: "Jowar (Sorghum)", minPh: 6.0, maxPh: 7.5, minMoist: 40, maxMoist: 60, n: 80, p: 40, k: 40 },
+    { name: "Bajra (Pearl Millet)", minPh: 6.5, maxPh: 7.5, minMoist: 30, maxMoist: 50, n: 40, p: 20, k: 20 },
+    { name: "Ragi (Finger Millet)", minPh: 5.0, maxPh: 8.0, minMoist: 40, maxMoist: 60, n: 40, p: 20, k: 20 },
+    { name: "Gram (Chickpea)", minPh: 6.0, maxPh: 7.5, minMoist: 35, maxMoist: 50, n: 20, p: 40, k: 20 },
+    { name: "Tur/Arhar", minPh: 6.5, maxPh: 7.5, minMoist: 40, maxMoist: 60, n: 20, p: 50, k: 20 },
+    { name: "Moong & Urad", minPh: 6.0, maxPh: 7.5, minMoist: 40, maxMoist: 55, n: 20, p: 40, k: 20 },
+    { name: "Sugarcane", minPh: 6.5, maxPh: 7.5, minMoist: 70, maxMoist: 90, n: 250, p: 100, k: 100 },
+    { name: "Cotton", minPh: 5.5, maxPh: 8.5, minMoist: 50, maxMoist: 70, n: 100, p: 50, k: 50 },
+    { name: "Jute", minPh: 5.0, maxPh: 7.4, minMoist: 70, maxMoist: 90, n: 60, p: 30, k: 30 },
+    { name: "Groundnut", minPh: 6.0, maxPh: 7.0, minMoist: 50, maxMoist: 65, n: 25, p: 50, k: 75 },
+    { name: "Mustard", minPh: 6.0, maxPh: 7.5, minMoist: 45, maxMoist: 65, n: 80, p: 40, k: 40 },
+    { name: "Soybean", minPh: 6.0, maxPh: 7.5, minMoist: 60, maxMoist: 75, n: 20, p: 60, k: 40 },
+    { name: "Tea", minPh: 4.5, maxPh: 5.5, minMoist: 70, maxMoist: 85, n: 120, p: 60, k: 60 },
+    { name: "Coffee", minPh: 5.5, maxPh: 6.5, minMoist: 60, maxMoist: 80, n: 160, p: 120, k: 160 }
+];
+
+function runCropAnalysis() {
+    const currentPh = parseFloat(document.getElementById('live-ph').textContent);
+    const currentMoisture = parseInt(document.getElementById('live-moisture').textContent);
+
+    const matches = cropDatabase.filter(crop => {
+        return currentPh >= crop.minPh && 
+               currentPh <= crop.maxPh && 
+               currentMoisture >= crop.minMoist && 
+               currentMoisture <= crop.maxMoist;
+    }).slice(0, 5); 
+
+    const container = document.querySelector('#recommendation-screen .page-content');
+    
+    if (matches.length === 0) {
+        container.innerHTML = `
+            <div class="no-match" style="text-align:center; padding: 20px;">
+                <p style="font-size: 50px;">⚠️</p>
+                <p>No crops match these current levels perfectly.</p>
+                <button class="primary-btn" onclick="goBack()">Try Again</button>
+            </div>`;
+    } else {
+        addToHistory(matches[0].name, currentPh, currentMoisture + "%");
+
+        let html = `<h3 style="margin-bottom:15px;">Top 5 Recommendations:</h3>`;
+        matches.forEach(crop => {
+            html += `
+                <div class="history-item" style="margin-bottom:12px; border-left: 5px solid #2e7d32; padding-left:10px;">
+                    <p><strong>${crop.name}</strong></p>
+                    <div style="font-size: 12px; color: #444; line-height: 1.6;">
+                        <strong>Ideal pH:</strong> ${crop.minPh}-${crop.maxPh} | 
+                        <strong>Moisture:</strong> ${crop.minMoist}-${crop.maxMoist}%<br>
+                        <strong>Needed:</strong> N:${crop.n} P:${crop.p} K:${crop.k}
+                    </div>
+                </div>`;
+        });
+        html += `<button class="primary-btn" onclick="goBack()" style="margin-top:20px">Back to Dashboard</button>`;
+        container.innerHTML = html;
+    }
+    navigateTo('recommendation-screen');
+}
+
+function handleRecommendation() {
+    const userInput = document.querySelector('.modal-input').value.trim().toLowerCase();
+    const selectedCrop = cropDatabase.find(c => c.name.toLowerCase() === userInput);
+    const container = document.querySelector('#recommendation-screen .page-content');
+    
+    hidePopup(); 
+
+    if (selectedCrop) {
+        addToHistory(selectedCrop.name, "Manual Check", "Search");
+        container.innerHTML = `
+            <h3 style="margin-bottom:15px;">Manual Crop Check:</h3>
+            <div class="history-item" style="border-left: 5px solid #ffa500; padding: 15px;">
+                <p style="font-size: 18px;"><strong>${selectedCrop.name}</strong></p>
+                <hr style="margin: 10px 0; opacity: 0.2;">
+                <p><strong>Target pH:</strong> ${selectedCrop.minPh} - ${selectedCrop.maxPh}</p>
+                <p><strong>Target Moisture:</strong> ${selectedCrop.minMoist}% - ${selectedCrop.maxMoist}%</p>
+                <p><strong>Required N:</strong> ${selectedCrop.n} | <strong>P:</strong> ${selectedCrop.p} | <strong>K:</strong> ${selectedCrop.k}</p>
+            </div>
+            <button class="primary-btn" onclick="goBack()" style="margin-top:20px">Back</button>`;
+    } else {
+        container.innerHTML = `<div style="text-align:center; padding: 20px;"><p>❌ Crop "${userInput}" not found.</p><button class="primary-btn" onclick="goBack()">Try Again</button></div>`;
+    }
+    navigateTo('recommendation-screen');
+}
+
+window.onload = () => {
+    updateUI('signin-screen');
+};
