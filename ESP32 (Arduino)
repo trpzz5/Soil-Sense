@@ -1,4 +1,3 @@
-Arduino codes for the hardware
 #define BLYNK_TEMPLATE_ID "TMPL3Kt8h-1Lf"
 #define BLYNK_TEMPLATE_NAME "Soil Sensors"
 #define BLYNK_AUTH_TOKEN "swAzNiUkygoWhwqfeIEqqYAx84uliHu9"
