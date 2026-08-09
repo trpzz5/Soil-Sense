@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoilSense App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="app-container">
+        
+        <div class="status-bar">
+            <span></span>
+            <span></span>
+        </div>
+
+        <header class="app-header" id="dynamic-header">
+            <span class="back-btn" id="header-back-btn" onclick="goBack()">&#10094;</span>
+            <span id="header-title"></span>
+        </header>
+
+        <main id="screen-wrapper">
+            
+            <section class="screen active" id="signin-screen">
+                <div class="page-content">
+                    <div class="logo-container">
+                        <div class="logo-circle">
+                            <img src="logo.png" class="logo-image" alt="SoilSense Logo">
+                        </div>
+                    </div>
+                    <div class="login-box">
+                        <p class="section-label">Create an account</p>
+                        <p class="sub-label">Enter your email to sign up for this app</p>
+                        <input type="email" class="app-input" placeholder="email@domain.com">
+                        <button class="primary-btn" onclick="login()">Continue</button>
+                        <div class="divider">or</div>
+                        <button class="secondary-btn">Continue with Google</button>
+                        <button class="secondary-btn">Continue with Apple</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="screen" id="home-screen">
+                <div class="page-content center-content">
+                    <h2 class="welcome-text">Welcome to Soil Sense</h2>
+                    <p class="analysis-text">Analysis Soil Parameters</p>
+                    <div class="logo-circle">
+                        <img src="logo.png" class="logo-image" alt="SoilSense Logo">
+                    </div>
+                    <button class="primary-btn" onclick="navigateTo('advisor-screen')">🔍 Start Analysis</button>
+                </div>
+            </section>
+
+            <section class="screen" id="advisor-screen">
+                <div class="page-content">
+                    <h3 class="param-title">Soil Parameters</h3>
+                    <div class="param-card"><span>pH Level</span><strong id="live-ph">--</strong></div>
+                    <div class="param-card"><span>Moisture</span><strong id="live-moisture">--</strong></div>
+                    
+                    <div class="param-card"><span>Nitrogen (N)</span><strong id="live-n">--</strong></div>
+                    <div class="param-card"><span>Phosphorus (P)</span><strong id="live-p">--</strong></div>
+                    <div class="param-card"><span>Potassium (K)</span><strong id="live-k">--</strong></div>
+                    
+                    <button class="primary-btn dark-green" onclick="runCropAnalysis()">Get Crop Recommendations</button>
+                    <button class="primary-btn" onclick="showPopup()">Enter My Crop Choice</button>
+                </div>
+            </section>
+
+            <section class="screen" id="recommendation-screen">
+                <div class="page-content">
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+
+            <section class="screen" id="history-screen">
+                <div class="page-content">
+                    </div>
+            </section>
+
+            <section class="screen" id="settings-screen">
+                <div class="page-content">
+                    <p class="settings-group-label">General</p>
+                    <div class="setting-row"><span>Leave Feedback</span><span>&#10095;</span></div>
+                    <div class="setting-row"><span>Switch themes</span><div class="toggle"></div></div>
+                    <div class="setting-row"><span>Data privacy terms</span><span>&#10095;</span></div>
+                    <div class="signout-bar" onclick="signOut()">
+                        <div class="exit-icon">←</div>
+                        <span>Sign out</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="modal-overlay" id="crop-popup">
+            <div class="modal-box">
+                <p>Enter your Crop Choice</p>
+                <input type="text" class="modal-input" placeholder="e.g. Rice, Wheat...">
+                <button class="primary-btn dark-green" onclick="handleRecommendation()">Search Crop Data</button>
+                <button class="primary-btn" style="background: #58655e;" onclick="hidePopup()">Close</button>
+            </div>
+        </div>
+
+        <nav id="bottom-nav">
+            <div class="nav-item active" id="nav-home" onclick="navigateTo('home-screen')">
+                🏠<span>Home</span>
+            </div>
+            <div class="nav-item" id="nav-history" onclick="navigateTo('history-screen')">
+                🕒<span>History</span>
+            </div>
+            <div class="nav-item" id="nav-settings" onclick="navigateTo('settings-screen')">
+                ⚙️<span>Settings</span>
+            </div>
+        </nav>
+
+    </div> 
+
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>
